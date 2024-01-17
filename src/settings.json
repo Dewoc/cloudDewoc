@@ -1,0 +1,11 @@
+{
+    "BASE_URL": "https://api.dewoc.com",
+    "theme": {
+        "textColor": "black",
+        "invertTextColor": "white",
+        "primaryColor": "white",
+        "accentColor": "#CC2929",
+        "backgroundAccentColor": "rgba(0, 0, 0, 0.05)"
+
+    }
+}
