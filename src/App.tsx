@@ -5,19 +5,6 @@ import { getLocalStorage } from "./shared";
 import ViewController from "./Dashboard/ViewController";
 import BotInputs from "./Dashboard/bots/input/page";
 
-// import { getLocalStorage } from "./shared";
-
-// function PrivateRoute({ element, ...props }: { element: JSX.Element } & RouteProps){
-//   const token = (getLocalStorage("access_token") as { itemData: { token: string } }).itemData.token;
-
-//   const Private = () => {
-//     if(!token) redirect("/login");
-
-//     return element;
-//   }
-//   return <Route {...props} element={<Private />} />
-// }
-
 const Protected = ({ children }: { children: JSX.Element }) => {
   const isLoggedIn = !!getLocalStorage<string>("access_token");
 
