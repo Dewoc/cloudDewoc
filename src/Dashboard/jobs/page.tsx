@@ -91,11 +91,6 @@ function JobsView() {
                 <h3>AÑADIR JOB</h3>
             </AddButton>
         </FooterSection>
-            <TextField 
-                type="date"
-                onChange={e => console.log(e.target.value)}
-                variant="standard"
-            />
 
         <Modal 
             open={openCreateJob}

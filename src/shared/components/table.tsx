@@ -6,19 +6,20 @@ import { theme } from "../../settings.json";
 type TableProps<R> = {
     headers: { key: string, text: string }[],
     rows: R[] | [],
-    emptyText: string
+    emptyText: string,
+    breakPagination?: number
 }
 
 /**
  * @param rows Array of objects of type R. Where each header (of headers param) matchs with one key value in each object R 
  */
-export default function Table({ headers, rows, emptyText }: TableProps<any>) {
+export default function Table({ headers, rows, emptyText, breakPagination = 5 }: TableProps<any>) {
     const [page, setPage] = useState<number>(0);
     const [paginatedRows, setPaginatedRows] = useState<[][]>([]);
 
     const paginateRows = (rows: any[]) => {
         let j = -1;
-        const breakPagination = 5; // const for handle the rows that are displayed
+        // const breakPagination = 5; // const for handle the rows that are displayed
 
         return rows.reduce((accumulator: any[], currentValue: any, i) => {
             if (i % breakPagination === 0) { accumulator.push([currentValue]); j++; }
@@ -29,9 +30,9 @@ export default function Table({ headers, rows, emptyText }: TableProps<any>) {
 
     }
 
-    useEffect(() => { console.log("las rows de prop cambiaron", rows); 
+    useEffect(() => {
         setPage(0);
-        rows.length && setPaginatedRows(paginateRows(rows)); 
+        rows.length && setPaginatedRows(paginateRows(rows));
     }, [rows]);
 
     return (rows.length && paginatedRows[0] && paginatedRows[0].length) ? <TableStyled theme={theme}>
@@ -53,9 +54,9 @@ export default function Table({ headers, rows, emptyText }: TableProps<any>) {
         <tfoot>
             <tr>
                 <td colSpan={headers.length} align="center" valign="middle">
-                    <button onClick={() => page > 0 && setPage(page - 1)}><MdOutlineKeyboardArrowLeft size="1.3rem" /></button>
+                    <button onClick={(e) => { e.preventDefault(); page > 0 && setPage(page - 1) }}><MdOutlineKeyboardArrowLeft size="1.3rem" /></button>
                     <strong>{`${page}`} de {paginatedRows.length - 1}</strong>
-                    <button onClick={() => page < (paginatedRows.length - 1) && setPage(page + 1)}>
+                    <button onClick={(e) => { e.preventDefault(); page < (paginatedRows.length - 1) && setPage(page + 1) }}>
                         <MdOutlineKeyboardArrowRight size="1.3rem" />
                     </button>
                 </td>

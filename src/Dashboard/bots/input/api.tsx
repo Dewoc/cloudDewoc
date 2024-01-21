@@ -3,31 +3,24 @@ import { post } from "../../../shared/api/index.u";
 import { BotInputListResData, UpdateBotInputResData } from "../../../shared/api/types.u";
 
 export async function createBotInput(reqParams: any) {
-    try {
-        let body = reqParams;
-        console.log("BODY OF REQ", body);
-        
-        await post("/inputs/add", body);
+    let body = reqParams;
+    console.log("BODY OF REQ", body);
 
-        return { message: "Bot creado exitosamente" };
-    } catch (e) {
-        return e;
-    }
+    const r = await post("/inputs/add", body);
+    if (r.error) throw r.errorMsg;
+
+    return { message: "Bot creado exitosamente" };
 }
 
 export async function deleteBotInput(reqParams: any) {
-    try {
-        const { idBot, cuit } = reqParams;
+    const { idBot, cuit } = reqParams;
 
-        const backRes = await post("/inputs/delete", { idBot, cuit })
-        console.log("REQ BODY:", idBot, cuit)
-        console.log("BODY RES:", backRes)
-        if(backRes.error) throw "Error " + backRes.errorMsg;
+    const backRes = await post("/inputs/delete", { idBot, cuit })
+    console.log("REQ BODY:", idBot, cuit)
+    console.log("BODY RES:", backRes)
+    if (backRes.error) throw "Error " + backRes.errorMsg;
 
-        return "Input eliminado correctamente";
-    } catch (e) {
-        return e;
-    }
+    return "Input eliminado correctamente";
 }
 
 function parseDataForFront(botInputs: BotInputType[]) {
@@ -37,28 +30,22 @@ function parseDataForFront(botInputs: BotInputType[]) {
 }
 
 export async function getAllBotInputs(reqParams: any): Promise<BotInputType[]> {
-    try {
-        const body: { idBot: string } = reqParams;
+    const body: { idBot: string } = reqParams;
 
-        const { data: botInputsList } = await post<BotInputListResData>("/inputs/list", { idBot: body.idBot });
+    const { data: botInputsList } = await post<BotInputListResData>("/inputs/list", { idBot: body.idBot });
 
-        return parseDataForFront(Array.isArray(botInputsList) ? botInputsList : [botInputsList]);
-    } catch (e) {
-        return [];
-    }
+    return parseDataForFront(Array.isArray(botInputsList) ? botInputsList : [botInputsList]);
 }
 
 export async function updateBotInput(reqParams: any) {
-    try {
-        const body: { idBot: string, input: string, [key: string]: string } = reqParams;
-        
-        const { data: botInputData } = await post<UpdateBotInputResData>("/inputs/list", { idBot: body.idBot, input: body.input });
-        
-        const newBotInputData = { ...botInputData, ...body };
-        await post<any>("/inputs/update", newBotInputData)
+    const body: { idBot: string, input: string, [key: string]: string } = reqParams;
 
-        return "Input actualizado correctamente";
-    } catch (e) {
-        return e;
-    }
+    const { data: botInputData } = await post<UpdateBotInputResData>("/inputs/list", { idBot: body.idBot, input: body.input });
+
+    const newBotInputData = { ...botInputData, ...body };
+    const r = await post<any>("/inputs/update", newBotInputData)
+
+    if (r.error) throw r.errorMsg;
+
+    return "Input actualizado correctamente";
 }
