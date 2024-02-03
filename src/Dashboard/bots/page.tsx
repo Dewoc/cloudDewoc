@@ -52,7 +52,6 @@ function Bots() {
     }
 
     const setActions = (data: (BotsViewTableType)[]) => {
-        console.log("data en setActions", data)
         data = data.map(bot => {
             return {
                 ...bot,
@@ -79,11 +78,10 @@ function Bots() {
     const getAllBotsV = () => {
         getAllBots()
             .then((data) => {
-                console.log("BOTS", data)
                 setTableBotsList(setActions(data));
                 setTableInmutableBotList(setActions(data));
             })
-            .catch(e => console.log("error en la promise", e));
+            .catch(() => alert("Ocurrió un error inesperado"));
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

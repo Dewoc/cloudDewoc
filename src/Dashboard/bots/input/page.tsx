@@ -43,14 +43,26 @@ function Assets() {
     }
 
     const setActions = (data: (BotInputViewTableType)[]) => {
-        console.log("data en setActions", data)
         data = data.map((l) => {
             return {
                 ...l,
                 actionEdit: <ActionButton onClick={() => {
-                    setEditInputBotFormInputs(l); setOpenEditInputBot(true);
-                    console.log("--------", typeof l.input)
-                    setInputData(JSON.parse(l.input));
+                    setEditInputBotFormInputs({ idBot: l.idBot, cuit: l.cuit });
+                    let currentInputData = JSON.parse(l.input)
+
+                    currentInputData = currentInputData.map((i: any, index: number) => {
+                        return {
+                            ...i,
+                            actionEdit: <ActionButton onClick={() => {
+                                setOpenEditInsideTable(true);
+                                setNewInputData({ key: i.key, value: i.value, index });
+                                setOpenNewInputData(true);
+                            }} ><MdEdit /></ActionButton>
+                        }
+                    });
+
+                    setEditInputData(currentInputData);
+                    setOpenEditInputBot(true);
                 }}><MdEdit /></ActionButton>,
                 actionDelete: <ActionButton onClick={() => {
                     deleteBotInput({ idBot: l.idBot, cuit: l.cuit })
@@ -70,23 +82,24 @@ function Assets() {
             .then((data) => {
                 setInputBotList(setActions(data));
             })
-            .catch(e => console.log("error en la promise", e));
+            .catch(() => alert("Ocurrió un error inesperado"));
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => { getAllBotInputsV(); }, []);
 
-    // table inputs whitin modal
-    const [inputData, setInputData] = useState<{ [key: string]: string }>();
-    // @ts-ignore
-    const [createInputData, setCreateInputData] = useState<{ key: string, value: string }[]|{}[]>([{}]);
+    const [createInputData, setCreateInputData] = useState<{ key: string, value: string }[] | {}[]>([{}]);
+
+    const [editInputData, setEditInputData] = useState<{ key: string, value: string, [key: string]: string | JSX.Element }[] | {}[]>([{}]);
 
     const [openNewInputData, setOpenNewInputData] = useState(false)
-    const [newInputData, setNewInputData] = useState({ key: "", value: "" })
+    const [newInputData, setNewInputData] = useState<{ key: string, value: string, index?: number }>({ key: "", value: "" });
+
     const onInputChangeNewInputData = (key: string, value: string) => {
         setNewInputData(prevState => { return { ...prevState, [key]: value } })
     }
-    console.log("inputData", typeof inputData, inputData && Object.keys(inputData))
+
+    const [openEditInsideTable, setOpenEditInsideTable] = useState(false);
 
     return <MainDashboardView>
         <HeaderSection>
@@ -108,7 +121,11 @@ function Assets() {
             onSubmit={(e) => {
                 e.preventDefault();
 
-                updateBotInput(editInputBotFormInputs)
+                updateBotInput({
+                    ...editInputBotFormInputs, input: JSON.stringify(Object.keys(editInputData[0]).length === 0 ? editInputData.slice(1) : editInputData.map((e) =>
+                        // @ts-ignore
+                        ({ key: e.key, value: e.value })))
+                })
                     .then(() => { alert("Input actualizado exitosamente"); getAllBotInputsV(); setOpenEditInputBot(false); })
                     .catch(() => alert("Ocurrió un error al actualizar el input. Revise los datos ingresados"))
             }}
@@ -119,26 +136,27 @@ function Assets() {
             disabledKeys={["idBot"]}
         >
             <InputTableModalContainer>
-                <h4>Inputs</h4>
-                {inputData &&
-                    <Table
-                        emptyText="No hay nada"
-                        headers={Object.keys(inputData).map(i => ({ key: i, text: i }))}
-                        rows={[{ l: "Lokura" }]}
-                        breakPagination={2}
-                    />
-                }
+                <div>
+                    <h4>INPUTS</h4>
+                    <button onClick={(e) => { e.preventDefault(); setOpenNewInputData(true); }}>Añadir</button>
+                </div>
+                <Table
+                    headers={[{ key: "key", text: "Clave" }, { key: "value", text: "Valor" }, { key: "actionEdit", text: "Editar" }]}
+                    rows={editInputData}
+                    emptyText="No hay información para mostrar"
+                    breakPagination={3}
+                />
             </InputTableModalContainer>
         </Modal>
 
         <Modal
             open={openCreateInputBot}
-            onClose={() => setOpenCreateInputBot(false)}
+            onClose={() => { setOpenCreateInputBot(false); setCreateInputData([{}]); setCreateInputBotFormInputs({ idBot: `${selectedBot.id}`, cuit: "" }) }}
             formInputs={createInputBotFormInputs}
             applyButtonText="Crear input"
             onSubmit={(e) => {
                 e.preventDefault();
-                createBotInput({...createInputBotFormInputs, input: JSON.stringify(createInputData.slice(1)) })
+                createBotInput({ ...createInputBotFormInputs, input: JSON.stringify(createInputData.slice(1)) })
                     .then(() => { alert("Input creado exitosamente"); getAllBotInputsV(); setOpenCreateInputBot(false); setCreateInputData([{}]) })
                     .catch(() => alert("Ocurrió un error al crear el input. Revise los datos ingresados"))
             }}
@@ -150,22 +168,60 @@ function Assets() {
                     <h4>INPUTS</h4>
                     <button onClick={(e) => { e.preventDefault(); setOpenNewInputData(true); }}>Añadir</button>
                 </div>
-                {
-                    <Table
-                        headers={[{ key: "key", text: "Clave" }, { key: "value", text: "Valor" }]}
-                        rows={createInputData}
-                        emptyText="No hay información para mostrar"
-                        breakPagination={2}
-                    />
-                }
+                <Table
+                    headers={[{ key: "key", text: "Clave" }, { key: "value", text: "Valor" }]}
+                    rows={createInputData}
+                    emptyText="No hay información para mostrar"
+                    breakPagination={2}
+                />
             </InputTableModalContainer>
         </Modal>
 
-        <Modal open={openNewInputData} onClose={() => setOpenNewInputData(false)}
-            applyButtonText="Añadir"
+        {/* MODAL FOR EDIT PURPOSES */}
+        <Modal open={openNewInputData} onClose={() => { setOpenNewInputData(false); setNewInputData({ key: "", value: "", index: undefined }); setOpenEditInsideTable(false); }}
+            applyButtonText={openEditInsideTable ? "Actualizar" : "Añadir"}
+            // @ts-ignore
             formInputs={newInputData}
             onInputChange={onInputChangeNewInputData}
-            onSubmit={(e) => { e.preventDefault(); setCreateInputData(prevState => [...prevState, newInputData]); setOpenNewInputData(false); }}
+            ignoreKeys={["index"]}
+            onSubmit={(e) => {
+                e.preventDefault();
+
+                if (!openCreateInputBot && openEditInsideTable) {
+                    setEditInputData(prevState => {
+                        const prevStateDeepCopy = prevState.map(p => ({ ...p }));
+                        // @ts-ignore
+                        (prevStateDeepCopy[newInputData.index] = {
+                            key: newInputData.key,
+                            value: newInputData.value,
+                            actionEdit: <ActionButton onClick={() => {
+                                
+                                setOpenEditInsideTable(true);
+                                setNewInputData({ key: newInputData.key, value: newInputData.value, index: newInputData.index });
+                                setOpenNewInputData(true);
+                            }} ><MdEdit /></ActionButton>
+                        });
+                        return prevStateDeepCopy;
+                    });
+                }
+                else if (openCreateInputBot) {
+                    setCreateInputData(prevState => [...prevState, newInputData]);
+                }
+                else {
+                    setEditInputData(prevState => [...prevState, {
+                        key: newInputData.key,
+                        value: newInputData.value,
+                        actionEdit: <ActionButton onClick={() => {
+                            setOpenEditInsideTable(true);
+                            setNewInputData({ key: newInputData.key, value: newInputData.value, index: (prevState.length - 1) });
+                            setOpenNewInputData(true);
+                        }} ><MdEdit /></ActionButton>
+                    }]);
+                }
+                setOpenEditInsideTable(false);
+                setOpenNewInputData(false);
+                setNewInputData({ key: "", value: "", index: undefined })
+            }}
             title="Añadir información"
         />
 

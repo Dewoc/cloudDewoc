@@ -27,7 +27,6 @@ function Login() {
         await loginHandler({ email, password })
                 .then(d => { 
 
-                    console.log("response", d)
                     if(d.error) throw d.errorMsg;
                     else {
                         setPending(false);

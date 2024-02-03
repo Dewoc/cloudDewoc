@@ -63,8 +63,6 @@ export async function updateUser(reqParams: { id: string, [key: string]: string 
         
         const newUserData = { ...userData, ...body };
 
-        console.log("BODY DE LOKURA", newUserData)
-
         await post<any>("/login/update", newUserData)
 
         return "Usuario actualizado correctamente";

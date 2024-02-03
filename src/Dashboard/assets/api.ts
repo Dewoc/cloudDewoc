@@ -5,7 +5,6 @@ import { AssetsListResData } from "../../shared/api/types.u";
 export async function createAsset(reqParams: { nombre: string, valor: string }) {
     try {
         let body = reqParams;
-        console.log("BODY OF REQ", body);
         
         await post("/assets/add", body);
 

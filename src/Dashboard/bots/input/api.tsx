@@ -4,7 +4,6 @@ import { BotInputListResData, UpdateBotInputResData } from "../../../shared/api/
 
 export async function createBotInput(reqParams: any) {
     let body = reqParams;
-    console.log("BODY OF REQ", body);
 
     const r = await post("/inputs/add", body);
     if (r.error) throw r.errorMsg;
@@ -16,8 +15,6 @@ export async function deleteBotInput(reqParams: any) {
     const { idBot, cuit } = reqParams;
 
     const backRes = await post("/inputs/delete", { idBot, cuit })
-    console.log("REQ BODY:", idBot, cuit)
-    console.log("BODY RES:", backRes)
     if (backRes.error) throw "Error " + backRes.errorMsg;
 
     return "Input eliminado correctamente";

@@ -11,8 +11,6 @@ export default async function loginHandler(loginParams: { email: string, passwor
         const { email, password } = loginParams;
         const fullRes = await loginRequest("/login/in", email, password);
 
-        console.log("fullRes", fullRes)
-
         const { data: user } = await getUserType(email);
         setLocalStorage("userData", user);
 

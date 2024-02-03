@@ -16,8 +16,6 @@ function Users() {
     const [tableUserList, setTableUserList] = useState<UserViewTableType[]>([]);
     const userData = getUserData();
 
-    console.log("userData", userData)
-
     const headers: { key: string, text: string }[] =
         [
             { key: "apellido", text: "last name" },
@@ -51,7 +49,7 @@ function Users() {
     function getAllUsersV() {
         getAllUsers()
             .then((data) => { setTableUserList(setActions(data)); })
-            .catch(e => console.log("error en la promise", e));
+            .catch(() => alert("Ocurrió un error inesperado, intentelo de nuevo más tarde"));
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -89,7 +87,6 @@ function Users() {
 
     const onSubmitCreateUser = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log("se envia loko: ", createUserFormInputs);
 
         createUser(createUserFormInputs)
             .then(() => { alert("Usuario creado correctamente"); setOpenCreateUser(false); getAllUsersV(); })

@@ -43,7 +43,6 @@ function Triggers() {
 
     const [activeCreateFormInput, setActiveCreateFormInput] = useState("");
     const [activeEditFormInput, setActiveEditFormInput] = useState("");
-    console.log("activeEditFormInput", activeEditFormInput)
 
     const onInputChangeCreateTrigger = (key: string, value: string) => {
         setCreateTriggersFormInputs(prevState => { return { ...prevState, [key]: value } })
@@ -69,19 +68,16 @@ function Triggers() {
     const getAllTriggersV = () => {
         getAllTriggers()
             .then((data) => {
-                console.log("TRIGGERS", data)
                 setTableTriggersList(setActions(data));
                 setTableInmutableTriggersList(setActions(data));
             })
-            .catch(e => console.log("error en la promise", e));
+            .catch(() => alert("Ocurrió un error inesperado"));
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => { getAllTriggersV(); }, []);
 
     const filterTriggers = (string: string) => {
-        console.log("strinb", string);
-
         const l = tableInmutableTriggersList.filter(trigger =>
             Object.values(trigger).some(v => (typeof v === "string" && v.toLowerCase().includes(string.toLowerCase())))
         );

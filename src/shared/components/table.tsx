@@ -45,9 +45,7 @@ export default function Table({ headers, rows, emptyText, breakPagination = 5 }:
             {
                 paginatedRows[page].map((row) =>
                     <tr key={Math.random()}>
-                        {row && headers.map(({ key }) =>
-                            <td key={Math.random()}>{row[key]}</td>
-                        )}
+                        {row && headers.map(({ key }) => <td key={Math.random()}>{row[key]}</td>)}
                     </tr>)
             }
         </tbody>

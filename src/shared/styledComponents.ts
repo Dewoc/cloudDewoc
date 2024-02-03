@@ -103,7 +103,7 @@ export const StyledModal = styled(Modal)`
            justify-content: space-between;
 
             & > div.formButtonContainer {
-                width: 60%;
+                width: 100%;
                 align-self: center;
                 padding-top: 20px;
                 display: flex;

@@ -10,7 +10,6 @@ export async function post<ResData extends GeneralResData>(endpoint: string, bod
     const token = getLocalStorage<{ token: string }>("access_token").token;
 
     Object.keys(bodyParams).map(key => body.set(key, bodyParams[key]))
-        console.log("SE HIZO LA REQ A", endpoint)
 
     const dataResponse = await fetch(url, { 
             method: "POST", 
@@ -18,12 +17,9 @@ export async function post<ResData extends GeneralResData>(endpoint: string, bod
             body
         }).then(res => res.json())
             .then((data: ResData) => { 
-                console.log("DATA IN POST", data)
-
                 if(data.error) throw { error: data.error, message: data.errorMsg };
                 else return data;
             })
-        .catch((e: ResData) => {console.log("ERROR EN", e); return e})
 
     return dataResponse;
 };

@@ -23,11 +23,10 @@ function Logs() {
     const getAllLogsV = () => {
         getAllLogs()
             .then((data) => {
-                console.log("TRIGGERS", data)
                 setTableLogsList(data);
                 setTableInmutableLogsList(data);
             })
-            .catch(e => console.log("error en la promise", e));
+            .catch(() => alert("Ocurrió un error inesperado"));
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -37,10 +37,8 @@ function Assets() {
         setEditAssetFormInputs(prevState => { return { ...prevState, [key]: value } })
     }
 
-    console.log("editAssetFormInputs", editAssetFormInputs)
 
     const setActions = (data: (AssetsViewTableType)[]) => {
-        console.log("data en setActions", data)
         data = data.map(asset => {
             return {
                 ...asset,
@@ -68,7 +66,7 @@ function Assets() {
             .then((data) => {
                 setTableAssetList(setActions(data));
             })
-            .catch(e => console.log("error en la promise", e));
+            .catch(() => alert("Ocurrió un error inesperado"));
     }
   
     return <MainDashboardView>

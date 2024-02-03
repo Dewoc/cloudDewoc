@@ -5,7 +5,6 @@ import { BotListResData, UpdateBotResData } from "../../shared/api/types.u";
 export async function createBot(reqParams: any) {
     try {
         let body = reqParams;
-        console.log("BODY OF REQ", body);
         
         await post("/bots/add", body);
 

@@ -64,7 +64,7 @@ function JobsView() {
                 setTableJobsList(setActions(data));
                 setTableInmutableJobsList(setActions(data));
             })
-            .catch(e => console.log("error en la promise", e));
+            .catch(() => alert("Ocurrió un error inesperado"));
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
